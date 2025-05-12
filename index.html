@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GNSS Data Converter | DIDAN_MAGANG WKM 2025</title>
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+      --success: #27ae60;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, var(--secondary), var(--accent));
+    }
+
+    h2 {
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2rem;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    h2::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background: var(--secondary);
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    textarea, input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    textarea {
+      min-height: 200px;
+      resize: vertical;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 25px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      background: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px 0;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    th {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      padding: 12px;
+      text-align: left;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+
+    tr:hover {
+      background: #e9f7fe;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+
+    .footer a {
+      color: var(--secondary);
+      text-decoration: none;
+    }
+
+    .input-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .filename-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .filename-group input {
+      flex: 1;
+    }
+
+    .filename-group select {
+      width: 120px;
+    }
+
+    @media (max-width: 768px) {
+      .input-group, .filename-group {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      .filename-group {
+        flex-direction: column;
+      }
+
+      .filename-group select {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>GNSS Data Converter</h2>
+
+    <label for="inputData">Tempel Data Mentah (dari Excel/CSV):</label>
+    <textarea id="inputData" rows="15" placeholder="Tempel data mentah dari Excel/CSV di sini..."></textarea>
+
+    <label for="fileUpload">Atau unggah file CSV:</label>
+    <input type="file" id="fileUpload" accept=".csv" onchange="handleFileUpload(event)"/>
+
+    <div class="input-group">
+      <div>
+        <label for="customDate">Tanggal Pengukuran:</label>
+        <input type="date" id="customDate" value="2025-05-01">
+      </div>
+      <div>
+        <label for="surveyorName">Nama Surveyor:</label>
+        <input type="text" id="surveyorName" placeholder="Masukkan nama surveyor" value="Raihan">
+      </div>
+    </div>
+
+    <label for="fileName">Nama File Output:</label>
+    <div class="filename-group">
+      <input type="text" id="fileName" placeholder="Misal: data_gnss_20250501">
+      <select id="fileExtension">
+        <option value=".csv">.csv</option>
+        <option value=".txt">.txt</option>
+      </select>
+    </div>
+
+    <button onclick="processData()">
+      Proses & Ekspor Data
+    </button>
+
+    <table id="outputTable">
+      <thead>
+        <tr>
+          <th>Kode</th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>Nama</th>
+          <th>Tanggal</th>
+          <th>Surveyor</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const content = e.target.result;
+        document.getElementById("inputData").value = content.trim();
+      };
+      reader.readAsText(file);
+    }
+
+    function processData() {
+      const raw = document.getElementById("inputData").value.trim();
+      if (!raw) {
+        alert("Silakan tempel data mentah terlebih dahulu!");
+        return;
+      }
+
+      const lines = raw.split("\n");
+      const data = [];
+      const dummy = ['0','0','0','0','','',''];
+      data.push(dummy, dummy);
+
+      const customDateInput = document.getElementById("customDate").value;
+      const customDate = formatDate(customDateInput);
+      const surveyorName = document.getElementById("surveyorName").value || "Raihan";
+
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(/\t+|,+/); // Mendukung tab atau koma sebagai pemisah
+        const name = cols[1];
+        const x = cols[2];
+        const y = cols[3];
+        const z = cols[4];
+        const status = cols[13];
+
+        if (!name || !x || !y || !z) continue;
+
+        let kode = "0";
+        if (status === "Fix Pos") kode = "30003";
+        else if (status === "RTK Fix") kode = "6";
+
+        let cleanName = name;
+        if (!/^T\d*$/.test(name)) {
+          cleanName = name.replace(/(\d+)$/, "");
+        }
+        cleanName = cleanName.replace(/(\d+)([A-Za-z]+)/, "$1 $2");
+
+        data.push([kode, x, y, z, cleanName, customDate, surveyorName]);
+      }
+
+      data.push(dummy, ['0','0','0','end','','','']);
+
+      const tbody = document.getElementById("outputTable").querySelector("tbody");
+      tbody.innerHTML = "";
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        row.forEach(cell => {
+          const td = document.createElement("td");
+          td.textContent = cell;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+
+      exportToCSV(data);
+    }
+
+    function formatDate(dateInput) {
+      const date = new Date(dateInput);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = String(date.getFullYear()).slice(2);
+      return `${day}/${month}/${year}`;
+    }
+
+    function exportToCSV(data) {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      data.forEach(row => {
+        csvContent += row.join(",") + "\n";
+      });
+
+      let fileName = document.getElementById("fileName").value.trim();
+      const fileExtension = document.getElementById("fileExtension").value;
+      if (!fileName) {
+        const now = new Date();
+        const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
+        const timeStr = now.toTimeString().slice(0, 8).replace(/:/g, '');
+        fileName = `data_gnss_${dateStr}_${timeStr}`;
+      }
+      if (!fileName.endsWith(fileExtension)) {
+        fileName += fileExtension;
+      }
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
